@@ -86,7 +86,7 @@ button.pack();
 button.place(x=10,y=60)
 
 text = Text(root,width="60")
-text.insert(INSERT, "Welcome to codehcef tool.Just enter the codechef handle\nand we are providing you all the data related to that\nhandle:-\n\n")
+text.insert(INSERT, "Welcome to hub port")
 
 text.pack()
 text.place(x=10,y=110)
