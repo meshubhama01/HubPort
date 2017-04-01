@@ -1,5 +1,6 @@
 import socket
 from Tkinter import *
+import tkMessageBox
 
 
 
@@ -37,7 +38,11 @@ def download(event):
 		if data=='File Exists':
 			print "hello"
 			data = s.recv(1024)
-			filesize = long(data)
+			try:
+				filesize = long(data)
+			except:
+				print("some error occured plzz try again")
+				exit(1)
 			#print(filesize)
 			#message = raw_input("press y/n")
 			#if message=='y':
@@ -61,12 +66,12 @@ def download(event):
 						#"% Done"
 				
 			print("download complete")
+			tkMessageBox.showinfo("Status","Download Succssesfully completed")
 		else:
 			print("file dont exists with name "+filename)
 			text.delete(1.0,END)
 			text.insert(INSERT,"Sorry there is not any file with name " + filename + "\n")
 			text.insert(INSERT,"Please try other files")
-			ent.insert(0,"")
 	s.close()
 
 
