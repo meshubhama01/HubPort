@@ -1,2 +1,2 @@
-# HubPort
-This is a small file sharing system project developed in python in which two system can share there files if connected to same network
+# HubPort(Under construction)
+HubPorrt is a small GUI application to share file between two networks
