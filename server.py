@@ -10,6 +10,7 @@ def download(name,socket):
 		#print(os.path.getsize(fileName))
 		#response = socket.recv(1024)
 		#if response[:2]== 'OK':
+		print(fileName)
 		print("file exists")
 		socket.send("File Exists")
 		socket.send(str(os.path.getsize(fileName)))

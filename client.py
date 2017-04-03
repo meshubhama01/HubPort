@@ -83,7 +83,7 @@ def download(event):
 		s[0]=socket.socket()
 		#print(port[0])
 		s[0].connect(('192.168.0.101',port[0]))
-		s[0].send(filename)
+		s[0].send('www/'+filename)
 		#print("downloading files")
 		data = s[0].recv(1024)
 		#print("downloading files")
@@ -99,7 +99,7 @@ def download(event):
 			#message = raw_input("press y/n")
 			#if message=='y':
 			#s.send('OK')
-			f = open('new_'+filename,'wb')
+			f = open('downloaded/'+filename,'wb')
 			data = s[0].recv(1024)
 			totalrecv = len(data)
 			#print(len(data))
