@@ -1,8 +1,9 @@
 import socket
 from Tkinter import *
 import tkMessageBox
+import os
 
-port = ""
+port = [8080]
 s=[socket.socket()]
 
 
@@ -20,10 +21,11 @@ def raise_frame(frame):
 
 def connect(event):
 	s[0]=socket.socket()
-	port = int(event['port'].get());
+	port[0] = int(event['port'].get());
+	
 	#try:
-	print(port)
-	s[0].connect(('192.168.0.101',port))
+	print(port[0])
+	s[0].connect(('192.168.0.101',port[0]))
 	print("connected")
 	f2.tkraise()
 	portNotify.config(text="Connected to port "+str(port))
@@ -61,7 +63,7 @@ def make_portbox():
 
 
 def download(event):
-	print(port)
+	print(port[0])
 	file = str(event['handle'].get())
 	print("downloading files")
 	
@@ -73,10 +75,14 @@ def download(event):
 		#text.delete(1.0,END)
 		#text.insert(INSERT,"Connectivity problem")
 	#print("downloading files")
+	
 
 	filename = file
 	if filename !='q':
 		#print("downloading files")
+		s[0]=socket.socket()
+		#print(port[0])
+		s[0].connect(('192.168.0.101',port[0]))
 		s[0].send(filename)
 		#print("downloading files")
 		data = s[0].recv(1024)
@@ -118,11 +124,16 @@ def download(event):
 			#text.delete(1.0,END)
 			#text.insert(INSERT,"Sorry there is not any file with name " + filename + "\n")
 			#text.insert(INSERT,"Please try other files")
-	print("connection closed")
+	#s[0]=socket.socket()
+	#print(port[0])
+	#s[0].connect(('127.0.0.1',port[0]))
+	#print("connection closed")
 	#s.close()
 
 
 
+
+os.startfile("server.py")
 
 root = Tk()
 root.geometry("500x500")
