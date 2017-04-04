@@ -28,7 +28,7 @@ def download(name,socket):
 	socket.close()
 
 def Main():
-	host = '192.168.0.101'
+	host = '192.168.0.102'
 	port = 3500
 	s = socket.socket()
 	s.bind((host,port))

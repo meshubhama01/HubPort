@@ -3,7 +3,8 @@ from Tkinter import *
 import tkMessageBox
 import os
 
-port = [8080]
+port = [3500]
+ip = ['127.0.0.1']
 s=[socket.socket()]
 
 
@@ -19,16 +20,17 @@ def makeform(root):
 def raise_frame(frame):
 	frame.tkraise()
 
-def connect(event):
+def connect(event,ip):
 	s[0]=socket.socket()
-	port[0] = int(event['port'].get());
-	
+	port[0] = int(event['port'].get())
+	ip[0] = ip['ip'].get()
+	print(ip[0])
 	#try:
 	print(port[0])
-	s[0].connect(('192.168.0.101',port[0]))
+	s[0].connect((ip[0],port[0]))
 	print("connected")
 	f2.tkraise()
-	portNotify.config(text="Connected to port "+str(port))
+	portNotify.config(text="Connected to " + ip[0] + ":" + str(port[0]))
 	portNotify.config(width="500")
 	return s
 	#except:
@@ -57,8 +59,18 @@ def make_portbox():
 	entries = {}
 	portEntry = Entry(f1)
 	portEntry.pack()
+	portEntry.insert(0,port[0])
 	portEntry.place(x=180,y=180)
 	entries['port'] = portEntry
+	return entries
+
+def make_ipbox():
+	entries = {}
+	ipEntry = Entry(f1)
+	ipEntry.pack()
+	ipEntry.insert(0,ip[0])
+	ipEntry.place(x=180,y=225)
+	entries['ip'] = ipEntry
 	return entries
 
 
@@ -82,7 +94,7 @@ def download(event):
 		#print("downloading files")
 		s[0]=socket.socket()
 		#print(port[0])
-		s[0].connect(('192.168.0.101',port[0]))
+		s[0].connect(('192.168.0.102',port[0]))
 		s[0].send('www/'+filename)
 		#print("downloading files")
 		data = s[0].recv(1024)
@@ -149,10 +161,12 @@ for frame in (f1,f2,f3,f4):
 title = Message(f1,text="WELCOME TO HUBPORT")
 title.config(font=('times', 24, 'italic'),width="500",bg="black",fg="white")
 ent = make_portbox()
+ip = make_ipbox()
+
 print(ent['port'].get())
-portButton = Button(f1,text="Connect",command=lambda e=ent:connect(e))
+portButton = Button(f1,text="Connect",command=lambda e=ent,i=ip:connect(e,i))
 portButton.pack()
-portButton.place(x=210,y=220)
+portButton.place(x=210,y=260)
 title.pack()
 title.place(x=40,y=10)
 
