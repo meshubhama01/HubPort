@@ -28,17 +28,22 @@ def download(name,socket):
 	socket.close()
 
 def Main():
-	host = '192.168.0.102'
+	hostname = socket.gethostname()
+
+	host =  socket.gethostbyname(hostname)
+	#host = '192.168.0.102'
 	port = 3500
 	s = socket.socket()
 	s.bind((host,port))
 	s.listen(5)
+
 	print("server started")
 
 	while True:
 		c, addr = s.accept()
 		print(addr)
 		print("client connected")
+		c.send(hostname)
 		t = threading.Thread(target=download,args=("download",c))
 		t.start()
 	s.close()

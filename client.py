@@ -3,46 +3,54 @@ from Tkinter import *
 import tkMessageBox
 import os
 
-port = [3500]
+#connectivity setup initialises
+port = [3500] 
 ip = ['127.0.0.1']
 s=[socket.socket()]
 
 
-def makeform(root):
-   entries = {}
+#create text box to insert the file you want to download
+"""def makeform(root):
+   entries = {} 
    ent = Entry(root)
    ent.insert(0,"0")
    ent.pack(side=RIGHT, expand=YES, fill=X)
    entries['handle'] = ent
    ent.place(x=10,y=30)
-   return entries
+   return entries"""
 
+#change frame on calling
 def raise_frame(frame):
 	frame.tkraise()
 
+#connect to a open socket
 def connect(event,ip):
+	#initial requirement for a socket
 	s[0]=socket.socket()
 	port[0] = int(event['port'].get())
 	ip[0] = ip['ip'].get()
-	print(ip[0])
-	#try:
-	print(port[0])
-	s[0].connect((ip[0],port[0]))
-	print("connected")
-	f2.tkraise()
-	portNotify.config(text="Connected to " + ip[0] + ":" + str(port[0]))
-	portNotify.config(width="500")
-	return s
-	#except:
-		#print("network error")
+
+	try:
+		s[0].connect((ip[0],port[0]))
+		f2.tkraise()
+		portNotify.config(text="Connected to " + ip[0] + ":" + str(port[0]))
+		portNotify.config(width="500")
+		host = s[0].recv(1024) #recieves the host name
+		hostname.config(text="Host:- "+ str(host) )
+		hostname.config(width="500")
+		return s
+	except:
+		tkMessageBox.showinfo("Status","There is a network error.This can be because the network you wanna join may to be open\nTry another network")
+		disconnect()
 
 def disconnect():
+	#clos the socket
 	print("disconnected")
 	s[0].close()
+	raise_frame(f1)#get back to the home page
 
-	raise_frame(f1)
 
-
+#create text box to insert the file you want to download
 def makeform():
    entries = {}
    ent = Entry(f2)
@@ -52,9 +60,7 @@ def makeform():
    ent.place(x=180,y=130)
    return entries
 
-
-
-
+#textbox to enter port
 def make_portbox():
 	entries = {}
 	portEntry = Entry(f1)
@@ -64,6 +70,7 @@ def make_portbox():
 	entries['port'] = portEntry
 	return entries
 
+#textbox to enter ip address
 def make_ipbox():
 	entries = {}
 	ipEntry = Entry(f1)
@@ -73,88 +80,58 @@ def make_ipbox():
 	entries['ip'] = ipEntry
 	return entries
 
-
+#function to download any file
 def download(event):
-	print(port[0])
 	file = str(event['handle'].get())
-	print("downloading files")
-	
-
-	
-	#try:
-	
-	#except:
-		#text.delete(1.0,END)
-		#text.insert(INSERT,"Connectivity problem")
-	#print("downloading files")
-	
-
 	filename = file
+	#create a new socket to download as if we will send the same request again and again to the server
+	#but there is not possible for server to respond them as they have less numer of response per socket
+	s[0]=socket.socket()
+	s[0].connect((ip[0],port[0]))
+	host = s[0].recv(1024) #reecieves host name
 	if filename !='q':
-		#print("downloading files")
-		s[0]=socket.socket()
-		#print(port[0])
-		s[0].connect(('192.168.0.102',port[0]))
-		s[0].send('www/'+filename)
-		#print("downloading files")
-		data = s[0].recv(1024)
-		#print("downloading files")
+		s[0].send('www/'+filename) #send the required path of the file to the server
+		data = s[0].recv(1024) 
+		print(data)#recieves the status of the file weather it exsiss or not
 		if data=='File Exists':
 			print "hello"
-			data = s[0].recv(1024)
+			data = s[0].recv(1024) #if file exists get the size of the file
 			try:
 				filesize = long(data)
 			except:
 				print("some error occured plzz try again")
 				exit(1)
-			#print(filesize)
-			#message = raw_input("press y/n")
-			#if message=='y':
-			#s.send('OK')
+
+			#create the same file in the download directory
 			f = open('downloaded/'+filename,'wb')
-			data = s[0].recv(1024)
+			data = s[0].recv(1024) #recieve the 1024 byte of the requested file data
 			totalrecv = len(data)
-			#print(len(data))
-			#print(totalrecv)
-			f.write(data)
-			#text.delete(1.0,END)
-			#text.insert(INSERT, "Recieving " + filename + "....\n")
-			print("recieving....")
-			while totalrecv<filesize:
+			f.write(data) 
+			print("recieving data....")
+			while totalrecv<filesize: #get all the bytes of the file  data
 				data = s[0].recv(1024)
 				totalrecv = totalrecv + len(data)
 				f.write(data)
 				print("recieving....")
-				#text.insert(INSERT, "Recieving " + filename + "....\n")
-				#print "{0:.2f}".format((totalrecv/float(filesize))*100)+\
-						#"% Done"
-				
-			print("download complete")
-			#tkMessageBox.showinfo("Status","Download Succssesfully completed")
+			tkMessageBox.showinfo("Download","Download Succssesfully completed")
 		else:
-			print("file dont exists with name "+filename)
-			#text.delete(1.0,END)
-			#text.insert(INSERT,"Sorry there is not any file with name " + filename + "\n")
-			#text.insert(INSERT,"Please try other files")
-	#s[0]=socket.socket()
-	#print(port[0])
-	#s[0].connect(('127.0.0.1',port[0]))
-	#print("connection closed")
-	#s.close()
+			tkMessageBox.showinfo("Download","File not exsists\nTry another file")
 
 
 
 
-os.startfile("server.py")
+os.startfile("server.py") #on starting a client gui ur server allready starts
 
+#set up root geometry
 root = Tk()
 root.geometry("500x500")
 root.title("HubPort")
+
+#define frames
 f1 = Frame(root,bg="black",height="500",width="500")
 f2 = Frame(root,bg="black",height="500",width="500")
-f3 = Frame(root)
-f4 = Frame(root)
 
+#position frames
 for frame in (f1,f2,f3,f4):
 	frame.grid(row=0, column=0, sticky='news')
 
@@ -177,6 +154,10 @@ raise_frame(f1)
 portNotify = Message(f2)
 portNotify.config(font=('times',24,'italic'),fg="white",bg="black")
 portNotify.pack()
+
+hostname = Message(f2)
+hostname.config(font=('times',20,'italic'),fg="white",bg="black")
+hostname.pack()
 
 disconnectButton = Button(f2,text="Disconnect",command=lambda:disconnect())
 disconnectButton.pack()
