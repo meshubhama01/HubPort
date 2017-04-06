@@ -1,6 +1,7 @@
 import socket
 import threading
 import os
+import pickle
 
 def download(name,socket):
 	fileName = socket.recv(1024)
@@ -44,6 +45,27 @@ def Main():
 		print(addr)
 		print("client connected")
 		c.send(hostname)
+		videos = []
+		images = []
+		docs = []
+		programs = []
+		installer = []
+		
+
+		for path, subdirs, files in os.walk('./www'):
+			for name in files:
+				loc = os.path.join(path, name)
+				print(loc)
+				getFileName = loc.split("\\")
+				getFileName = getFileName[len(getFileName)-1]
+				ext = (getFileName.split('.'))[1]
+				if ext == "mp4" or ext =="MP4" or ext =="mkv":
+					videos.append(getFileName)
+				elif ext == "txt":
+					docs.append(getFileName)
+
+		files = [videos,docs]
+		c.send(pickle.dumps(files))
 		t = threading.Thread(target=download,args=("download",c))
 		t.start()
 	s.close()

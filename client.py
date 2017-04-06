@@ -2,22 +2,12 @@ import socket
 from Tkinter import *
 import tkMessageBox
 import os
+import pickle
 
 #connectivity setup initialises
 port = [3500] 
 ip = ['127.0.0.1']
 s=[socket.socket()]
-
-
-#create text box to insert the file you want to download
-"""def makeform(root):
-   entries = {} 
-   ent = Entry(root)
-   ent.insert(0,"0")
-   ent.pack(side=RIGHT, expand=YES, fill=X)
-   entries['handle'] = ent
-   ent.place(x=10,y=30)
-   return entries"""
 
 #change frame on calling
 def raise_frame(frame):
@@ -36,14 +26,21 @@ def connect(event,ip):
 		portNotify.config(text="Connected to " + ip[0] + ":" + str(port[0]))
 		portNotify.config(width="500")
 		host = s[0].recv(1024) #recieves the host name
+		dir = s[0].recv(1024)
+		dir = pickle.loads(dir)
+		for item in dir[1]:
+			textList.insert(END,item)
+		#print( pickle.loads(dir))
 		hostname.config(text="Host:- "+ str(host) )
 		hostname.config(width="500")
+		exploreFrom.config(text="Exploring files of "+ str(host))
+		exploreFrom.config(width="500")
 		return s
 	except:
 		tkMessageBox.showinfo("Status","There is a network error.This can be because the network you wanna join may to be open\nTry another network")
 		disconnect()
 
-def disconnect():
+def disconnect(): 
 	#clos the socket
 	print("disconnected")
 	s[0].close()
@@ -130,9 +127,9 @@ root.title("HubPort")
 #define frames
 f1 = Frame(root,bg="black",height="500",width="500")
 f2 = Frame(root,bg="black",height="500",width="500")
-
+f3 = Frame(root,bg="black",height="500",width="500")
 #position frames
-for frame in (f1,f2,f3,f4):
+for frame in (f1,f2,f3):
 	frame.grid(row=0, column=0, sticky='news')
 
 title = Message(f1,text="WELCOME TO HUBPORT")
@@ -167,6 +164,21 @@ ents = makeform()
 downloadButton =Button(f2,text="Download",command=lambda e=ents:download(e))
 downloadButton.pack()
 downloadButton.place(x=180,y=158)
+
+exploreButton = Button(f2,text="Explore Files",command=lambda:raise_frame(f3))
+exploreButton.pack()
+exploreButton.place(x=210,y=325)
+
+exploreFrom = Message(f3)
+exploreFrom.config(font=('times',24,'italic'),fg="white",bg="black")
+exploreFrom.pack()
+
+textList = Listbox(f3)
+textList.pack()
+
+
+
+
 
 
 
