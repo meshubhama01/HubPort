@@ -38,7 +38,7 @@ def Main():
 	s.bind((host,port))
 	s.listen(5)
 
-	print("server started")
+	print("server started on ip " + host)
 
 	while True:
 		c, addr = s.accept()
@@ -48,7 +48,7 @@ def Main():
 		videos = []
 		images = []
 		docs = []
-		programs = []
+		others = []
 		installer = []
 		
 
@@ -59,10 +59,16 @@ def Main():
 				getFileName = loc.split("\\")
 				getFileName = getFileName[len(getFileName)-1]
 				ext = (getFileName.split('.'))[1]
-				if ext == "mp4" or ext =="MP4" or ext =="mkv":
+				if ext == "mp4" or ext =="MP4" or ext =="mkv" or ext == "flv" or ext== "3gp":
 					videos.append(getFileName)
-				elif ext == "txt":
+				elif ext == "txt" or ext == "docx" or ext == "ppt":
 					docs.append(getFileName)
+				elif ext == "mp3" or ext == "MP3":
+					songs.append(getFilename)
+				elif ext=="exe":
+					installer.append(getFileName)
+				else:
+					others.append(others)
 
 		files = [videos,docs]
 		c.send(pickle.dumps(files))

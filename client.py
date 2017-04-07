@@ -3,6 +3,7 @@ from Tkinter import *
 import tkMessageBox
 import os
 import pickle
+import subprocess
 
 #connectivity setup initialises
 port = [3500] 
@@ -26,8 +27,8 @@ def connect(event,ip):
 		portNotify.config(text="Connected to " + ip[0] + ":" + str(port[0]))
 		portNotify.config(width="500")
 		host = s[0].recv(1024) #recieves the host name
-		dir = s[0].recv(1024)
-		dir = pickle.loads(dir)
+		dir = s[0].recv(1024) #recieve the whole directry
+		dir = pickle.loads(dir) #pickle the whole directory
 		for item in dir[1]:
 			textList.insert(END,item)
 		#print( pickle.loads(dir))
@@ -76,6 +77,15 @@ def make_ipbox():
 	ipEntry.place(x=180,y=225)
 	entries['ip'] = ipEntry
 	return entries
+
+def createHotspot():
+	ssid = socket.gethostname()
+	print(ssid)
+	password = "hubport@123"
+	subprocess.call('netsh wlan stop hostednetwork',shell=True)
+	subprocess.call('netsh wlan set hostednetwork mode=allow ssid='+ssid+' key='+password,shell=True)
+	subprocess.call('netsh wlan start hostednetwork ',shell=True)
+
 
 #function to download any file
 def download(event):
@@ -173,8 +183,26 @@ exploreFrom = Message(f3)
 exploreFrom.config(font=('times',24,'italic'),fg="white",bg="black")
 exploreFrom.pack()
 
+textShow = Message(f3)
+textShow.config(font=('times',13,'italic'),fg="white",bg="black")
+
 textList = Listbox(f3)
 textList.pack()
+textList.place(x=35,y=100)
+
+textShow.config(font=('times',24,'italic'),fg="white",bg="black")
+textShow.config(text="Documents")
+textShow.config(width="500")
+textShow.pack()
+textShow.place(x=20,y=50)
+
+createButton = Button(f1,text="Create",command=lambda:createHotspot())
+createButton.pack()
+createButton.place(x=180,y=360)
+
+joinButton = Button(f1,text="Join")
+joinButton.pack()
+joinButton.place(x=240,y=360)
 
 
 
