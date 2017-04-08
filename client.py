@@ -4,6 +4,7 @@ import tkMessageBox
 import os
 import pickle
 import subprocess
+import threading
 
 #connectivity setup initialises
 port = [3500] 
@@ -60,7 +61,7 @@ def makeform():
 
 #textbox to enter port
 def make_portbox():
-	entries = {}
+	entries = {}  
 	portEntry = Entry(f1)
 	portEntry.pack()
 	portEntry.insert(0,port[0])
@@ -79,12 +80,52 @@ def make_ipbox():
 	return entries
 
 def createHotspot():
-	ssid = socket.gethostname()
+	ssid = socket.gethostname() + "@hp"
 	print(ssid)
 	password = "hubport@123"
 	subprocess.call('netsh wlan stop hostednetwork',shell=True)
 	subprocess.call('netsh wlan set hostednetwork mode=allow ssid='+ssid+' key='+password,shell=True)
 	subprocess.call('netsh wlan start hostednetwork ',shell=True)
+
+def connectWifi():
+	"""allwifi = subprocess.check_output(["netsh", "wlan", "show", "network"])
+	allwifi = allwifi.decode("ascii")
+	allwifi = allwifi.replace("\r","")
+	ls = results.split("\n")
+	ls = ls[4:]
+	ssids = []
+	x = 0
+	while x < len(ls):
+	    if x % 5 == 0:
+	        act = ls[x].split(":")
+	        if(len(act)>1):
+	        	ssids.append(act)
+	    x += 1"""
+
+def showWifi():
+	raise_frame(f4)
+	print(wifiList.get(ACTIVE))
+	#threading.Timer(5.0, showWifi).start()
+	delWifiList()
+	allwifi = subprocess.check_output(["netsh", "wlan", "show", "network"])
+	allwifi = allwifi.decode("ascii")
+	allwifi = allwifi.replace("\r","")
+	ls = allwifi.split("\n")
+	ls = ls[4:]
+	ssids = []
+	x = 0
+	while x < len(ls):
+	    if x % 5 == 0:
+	        act = ls[x].split(":")
+	        if(len(act)>1):
+	        	wifiList.insert(END,act[1])
+	    x += 1
+
+def delWifiList():
+	cs=wifiList.size()
+	if(cs>0):
+		wifiList.delete(0,END) 
+
 
 
 #function to download any file
@@ -138,8 +179,9 @@ root.title("HubPort")
 f1 = Frame(root,bg="black",height="500",width="500")
 f2 = Frame(root,bg="black",height="500",width="500")
 f3 = Frame(root,bg="black",height="500",width="500")
+f4 = Frame(root,bg="black",height="500",width="500")
 #position frames
-for frame in (f1,f2,f3):
+for frame in (f1,f2,f3,f4):
 	frame.grid(row=0, column=0, sticky='news')
 
 title = Message(f1,text="WELCOME TO HUBPORT")
@@ -200,13 +242,21 @@ createButton = Button(f1,text="Create",command=lambda:createHotspot())
 createButton.pack()
 createButton.place(x=180,y=360)
 
-joinButton = Button(f1,text="Join")
+joinButton = Button(f1,text="Join",command=lambda:showWifi())
 joinButton.pack()
 joinButton.place(x=240,y=360)
 
+wifiList = Listbox(f4)
+wifiList.pack()
+wifiList.place(x=35,y=100)
 
+refreshButton = Button(f4,text="Refresh",command=lambda:showWifi())
+refreshButton.pack()
+refreshButton.place(x=250,y=100)
 
-
+connectButton = Button(f4,text="Connect",command=lambda:connectWifi())
+connectButton.pack()
+connectButton.place(x=250,y=150)
 
 
 
