@@ -6,7 +6,9 @@ import pickle
 import subprocess
 import threading
 
-#connectivity setup initialises
+#This file is the main file which sholud be started to run the app
+
+#connectivity setup initialises.
 port = [3500] 
 ip = ['127.0.0.1']
 s=[socket.socket()]
@@ -23,27 +25,39 @@ def connect(event,ip):
 	ip[0] = ip['ip'].get()
 
 	try:
+		#try to coneect with the requested server and if it is connected
+		#raise the another frame.
 		s[0].connect((ip[0],port[0]))
 		f2.tkraise()
+
+		#header and UI of the second frame
 		portNotify.config(text="Connected to " + ip[0] + ":" + str(port[0]))
 		portNotify.config(width="500")
-		host = s[0].recv(1024) #recieves the host name
-		dir = s[0].recv(1024) #recieve the whole directry
-		dir = pickle.loads(dir) #pickle the whole directory
+
+		#recieves the host name,whole shared directory in encoded form 
+		#and then deocde it
+		host = s[0].recv(1024) 
+		dir = s[0].recv(1024)
+		dir = pickle.loads(dir)
+
+		#insert all the shared file in the textlist to show it
 		for item in dir[1]:
 			textList.insert(END,item)
-		#print( pickle.loads(dir))
+
+		#create the header and UI for frame1 and frame2
 		hostname.config(text="Host:- "+ str(host) )
 		hostname.config(width="500")
 		exploreFrom.config(text="Exploring files of "+ str(host))
 		exploreFrom.config(width="500")
 		return s
 	except:
+		#If there is any error in whol process return a message to the client
+		#and leave the socket from captured ip and port by calling disconnect
 		tkMessageBox.showinfo("Status","There is a network error.This can be because the network you wanna join may to be open\nTry another network")
 		disconnect()
 
 def disconnect(): 
-	#clos the socket
+	#close the socket and return to the main frame
 	print("disconnected")
 	s[0].close()
 	raise_frame(f1)#get back to the home page
@@ -190,9 +204,14 @@ ent = make_portbox()
 ip = make_ipbox()
 
 print(ent['port'].get())
+
+#This is a button which is used to connect to the server taking the value
+#of ip and port from the text box.It calls connect method with ip and port
+#as argument.
 portButton = Button(f1,text="Connect",command=lambda e=ent,i=ip:connect(e,i))
 portButton.pack()
 portButton.place(x=210,y=260)
+
 title.pack()
 title.place(x=40,y=10)
 
