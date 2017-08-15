@@ -42,7 +42,7 @@ def connect(event,ip):
 
 		#insert all the shared file in the textlist to show it
 		for item in dir[1]:
-			textList.insert(END,item)
+			textList.insert(END,item)   #for jpeg file use # with open ('C:\Users\screennew.jpg', 'wb') as f:f.write(content)
 
 		#create the header and UI for frame1 and frame2
 		hostname.config(text="Host:- "+ str(host) )
